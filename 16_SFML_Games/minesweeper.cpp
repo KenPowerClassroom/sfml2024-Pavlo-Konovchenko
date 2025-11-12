@@ -34,16 +34,24 @@ public:
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
             {
-                int n = 0;
                 if (grid[i][j] == TileState::Bomb) continue;
-                if (grid[i + 1][j] == TileState::Bomb) n++;
-                if (grid[i][j + 1] == TileState::Bomb) n++;
-                if (grid[i - 1][j] == TileState::Bomb) n++;
-                if (grid[i][j - 1] == TileState::Bomb) n++;
-                if (grid[i + 1][j + 1] == TileState::Bomb) n++;
-                if (grid[i - 1][j - 1] == TileState::Bomb) n++;
-                if (grid[i - 1][j + 1] == TileState::Bomb) n++;
-                if (grid[i + 1][j - 1] == TileState::Bomb) n++;
+
+                int n = 0;
+                int iCounter = -1;
+                int jCounter = -1;
+                for (int bombCheck = 0; bombCheck <= 8; bombCheck++)
+                {
+                    if (bombCheck % 3 == 0 && bombCheck != 0)
+                    {
+                        iCounter++;
+                        jCounter = -1;
+                    }
+                    if (grid[i + iCounter][j + jCounter] == TileState::Bomb)
+                    {
+                        n++;
+                    }
+                    jCounter++;
+                }
                 grid[i][j] = static_cast<TileState> (n);
             }
     };
