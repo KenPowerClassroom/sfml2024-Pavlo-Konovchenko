@@ -2,6 +2,22 @@
 #include <time.h>
 using namespace sf;
 
+enum class TileState
+{
+    Empty,
+    OneBomb,
+    TwoBombs,
+    ThreeBombs,
+    FourBombs,
+    FiveBombs,
+    SixBombs,
+    SevenBombs,
+    EightBombs,
+    Bomb,
+    ClosedTile,
+    Flagged
+};
+
 class Board
 {
 public:
@@ -10,25 +26,25 @@ public:
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
             {
-                shownGrid[i][j] = 10;
-                if (rand() % 5 == 0)  grid[i][j] = 9;
-                else grid[i][j] = 0;
+                shownGrid[i][j] = TileState::ClosedTile;
+                if (rand() % 5 == 0)  grid[i][j] = TileState::Bomb;
+                else grid[i][j] = TileState::Empty;
             }
 
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
             {
                 int n = 0;
-                if (grid[i][j] == 9) continue;
-                if (grid[i + 1][j] == 9) n++;
-                if (grid[i][j + 1] == 9) n++;
-                if (grid[i - 1][j] == 9) n++;
-                if (grid[i][j - 1] == 9) n++;
-                if (grid[i + 1][j + 1] == 9) n++;
-                if (grid[i - 1][j - 1] == 9) n++;
-                if (grid[i - 1][j + 1] == 9) n++;
-                if (grid[i + 1][j - 1] == 9) n++;
-                grid[i][j] = n;
+                if (grid[i][j] == TileState::Bomb) continue;
+                if (grid[i + 1][j] == TileState::Bomb) n++;
+                if (grid[i][j + 1] == TileState::Bomb) n++;
+                if (grid[i - 1][j] == TileState::Bomb) n++;
+                if (grid[i][j - 1] == TileState::Bomb) n++;
+                if (grid[i + 1][j + 1] == TileState::Bomb) n++;
+                if (grid[i - 1][j - 1] == TileState::Bomb) n++;
+                if (grid[i - 1][j + 1] == TileState::Bomb) n++;
+                if (grid[i + 1][j - 1] == TileState::Bomb) n++;
+                grid[i][j] = static_cast<TileState> (n);
             }
     };
 
@@ -38,15 +54,15 @@ public:
     }
     void setFlag(int t_x, int t_y)
     {
-        shownGrid[t_x][t_y] = 11;
+        shownGrid[t_x][t_y] = TileState::Flagged;
     }
     int getTileValue(int t_x, int t_y)
     {
-        return shownGrid[t_x][t_y];
+        return static_cast<int> (shownGrid[t_x][t_y]);
     }
 private:
-    int grid[12][12];
-    int shownGrid[12][12];
+    TileState grid[12][12];
+    TileState shownGrid[12][12];
 };
 
 int minesweeper()
