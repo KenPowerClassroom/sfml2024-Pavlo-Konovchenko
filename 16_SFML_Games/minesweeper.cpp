@@ -23,6 +23,28 @@ class Board
 public:
     Board()
     {
+        randomizeBombs();
+        countBombs();
+    };
+
+    void revealGrid(int t_x, int t_y)
+    {
+        shownGrid[t_x][t_y] = grid[t_x][t_y];
+    }
+    void setFlag(int t_x, int t_y)
+    {
+        shownGrid[t_x][t_y] = TileState::Flagged;
+    }
+    int getTileValue(int t_x, int t_y)
+    {
+        return static_cast<int> (shownGrid[t_x][t_y]);
+    }
+private:
+    TileState grid[12][12];
+    TileState shownGrid[12][12];
+
+    void randomizeBombs()
+    {
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
             {
@@ -30,7 +52,9 @@ public:
                 if (rand() % 5 == 0)  grid[i][j] = TileState::Bomb;
                 else grid[i][j] = TileState::Empty;
             }
-
+    }
+    void countBombs()
+    {
         for (int i = 1; i <= 10; i++)
             for (int j = 1; j <= 10; j++)
             {
@@ -54,23 +78,7 @@ public:
                 }
                 grid[i][j] = static_cast<TileState> (n);
             }
-    };
-
-    void revealGrid(int t_x, int t_y)
-    {
-        shownGrid[t_x][t_y] = grid[t_x][t_y];
     }
-    void setFlag(int t_x, int t_y)
-    {
-        shownGrid[t_x][t_y] = TileState::Flagged;
-    }
-    int getTileValue(int t_x, int t_y)
-    {
-        return static_cast<int> (shownGrid[t_x][t_y]);
-    }
-private:
-    TileState grid[12][12];
-    TileState shownGrid[12][12];
 };
 
 void inputHandler(RenderWindow& app, Board& board, int x, int y);
