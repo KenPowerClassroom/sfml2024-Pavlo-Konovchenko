@@ -73,6 +73,8 @@ private:
     TileState shownGrid[12][12];
 };
 
+void inputHandler(RenderWindow& app, Board& board, int x, int y);
+
 int minesweeper()
 {
     srand(time(0));
@@ -97,19 +99,7 @@ int minesweeper()
         int x = pos.x/w;
         int y = pos.y/w;
 
-        Event e;
-        while (app.pollEvent(e))
-        {
-            if (e.type == Event::Closed)
-                app.close();
-
-            // if mouse was pressed open the cell that was pressed
-            // or mark it as a flag
-            if (e.type == Event::MouseButtonPressed)
-              if (e.key.code == Mouse::Left) board.revealGrid(x, y);
-              else if (e.key.code == Mouse::Right) board.setFlag(x, y);
-        }
-
+        inputHandler(app, board, x, y);
 
         //
         // Draw
@@ -129,4 +119,20 @@ int minesweeper()
     }
 
     return 0;
+}
+
+void inputHandler(RenderWindow& app, Board& board, int x, int y) 
+{
+    Event e;
+    while (app.pollEvent(e))
+    {
+        if (e.type == Event::Closed)
+            app.close();
+
+        // if mouse was pressed open the cell that was pressed
+        // or mark it as a flag
+        if (e.type == Event::MouseButtonPressed)
+            if (e.key.code == Mouse::Left) board.revealGrid(x, y);
+            else if (e.key.code == Mouse::Right) board.setFlag(x, y);
+    }
 }
