@@ -39,9 +39,11 @@ public:
     {
         return static_cast<int> (shownGrid[t_x][t_y]);
     }
+    int getCellSize() { return cellSize; }
 private:
     TileState grid[12][12];
     TileState shownGrid[12][12];
+    int cellSize = 32;
 
     void randomizeBombs()
     {
@@ -81,16 +83,30 @@ private:
     }
 };
 
-void inputHandler(RenderWindow& app, Board& board, int x, int y);
-void draw(RenderWindow& app, Sprite sprite, Board& board, int cellSize, int mouseX, int mouseY);
+class MousePosition
+{
+public:
+    MousePosition(Vector2i pos, int cellSize)
+    {
+        x = pos.x / cellSize;
+        y = pos.y / cellSize;
+    }
+    int getX() { return x; }
+    int getY() { return y; }
+
+private:
+    int x;
+    int y;
+};
+
+void inputHandler(RenderWindow& app, Board& board, MousePosition mouse);
+void draw(RenderWindow& app, Sprite sprite, Board& board, MousePosition mouse);
 
 int minesweeper()
 {
     srand(time(0));
 
     RenderWindow app(VideoMode(400, 400), "Minesweeper!");
-
-    int cellSize=32;
     Board board;
 
     Texture texture;
@@ -102,24 +118,16 @@ int minesweeper()
     //
     while (app.isOpen())
     {
-        Vector2i pos = Mouse::getPosition(app);
-        // Divide by cingular cell sprite size
-        // to get which cell we are currently clicking
-        int mouseX = pos.x/cellSize;
-        int mouseY = pos.y/cellSize;
+        MousePosition mousepos(Mouse::getPosition(app), board.getCellSize());
 
-        inputHandler(app, board, mouseX, mouseY);
-
-        //
-        // Draw
-        //
-        draw(app, sprite, board, cellSize, mouseX, mouseY);
+        inputHandler(app, board, mousepos);
+        draw(app, sprite, board, mousepos);
     }
 
     return 0;
 }
 
-void inputHandler(RenderWindow& app, Board& board, int x, int y) 
+void inputHandler(RenderWindow& app, Board& board, MousePosition mousepos) 
 {
     Event event;
     while (app.pollEvent(event))
@@ -130,19 +138,20 @@ void inputHandler(RenderWindow& app, Board& board, int x, int y)
         // if mouse was pressed open the cell that was pressed
         // or mark it as a flag
         if (event.type == Event::MouseButtonPressed)
-            if (event.key.code == Mouse::Left) board.revealGrid(x, y);
-            else if (event.key.code == Mouse::Right) board.setFlag(x, y);
+            if (event.key.code == Mouse::Left) board.revealGrid(mousepos.getX(), mousepos.getY());
+            else if (event.key.code == Mouse::Right) board.setFlag(mousepos.getX(), mousepos.getY());
     }
 }
 
-void draw(RenderWindow& app, Sprite sprite, Board& board, int cellSize, int mouseX, int mouseY)
+void draw(RenderWindow& app, Sprite sprite, Board& board, MousePosition mousepos)
 {
+    int cellSize = board.getCellSize();
     app.clear(Color::White);
 
     for (int i = 1; i <= 10; i++)
         for (int j = 1; j <= 10; j++)
         {
-            if (board.getTileValue(mouseX, mouseY) == 9) board.revealGrid(i, j);;
+            if (board.getTileValue(mousepos.getX(), mousepos.getY()) == 9) board.revealGrid(i, j);;
             sprite.setTextureRect(IntRect(board.getTileValue(i, j) * cellSize, 0, cellSize, cellSize));
             sprite.setPosition(i * cellSize, j * cellSize);
             app.draw(sprite);
